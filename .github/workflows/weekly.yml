@@ -1,0 +1,22 @@
+name: weekly-fed-report
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"   # 매주 월요일 00:00 UTC = 한국 09:00 (GitHub 사정으로 몇십 분 늦을 수 있음)
+  workflow_dispatch:       # Actions 탭에서 수동 실행 버튼
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: 리포트 보내기
+        run: python report.py
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
